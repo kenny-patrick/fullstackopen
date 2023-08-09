@@ -1,17 +1,14 @@
 const Persons = ({ persons, handleDelete }) => {
 
-	const inlineStyles = {
-		listStyle: 'none'
-	}
 	return (
 		<ul>
 			{persons.map(person => {
 				return (
 					<li
-						style={inlineStyles}
+						className='personItem'
 						key={person.name}
 					>
-						{person.name} {person.number} <button onClick={() => handleDelete(person.id, person.name)}>delete</button>
+						{person.name} {person.number} <button onClick={(event) => handleDelete(event, person.id, person.name)}>delete</button>
 					</li>
 				)
 			})}

@@ -1,17 +1,24 @@
 import { useState } from 'react'
 import personsService from '../services/persons'
 
-const PersonForm = ({ persons, setPersons }) => {
+const PersonForm = ({ persons, setPersons, setNotifMsg, setNotifClass }) => {
 	const [newName, setNewName] = useState('')
 	const [newNumber, setNewNumber] = useState('')
 
-	const handleNameChange = (event) => (setNewName(event.target.value))
+	const handleNameChange = (event) => ( setNewName(event.target.value))
 	const handleNumberChange = (event) => (setNewNumber(event.target.value))
 
 	const isNameDuplicate = () => {
 		const results = persons.filter(person => person.name === newName)
 		// console.log(results)
 		return results.length > 0 ? true : false
+	}
+
+	const resetNotif = () => {
+		setTimeout(() => {
+			setNotifMsg(null)
+			setNotifClass(null)
+		}, 5000)
 	}
 
 	const addPerson = (event) => {
@@ -32,15 +39,32 @@ const PersonForm = ({ persons, setPersons }) => {
 					setPersons(persons.concat(returnedPerson))
 					setNewName('')
 					setNewNumber('')
+					setNotifMsg(`Added ${returnedPerson.name}`)
+					setNotifClass('message')
+					resetNotif()
 				})
 		}
 	}
 
 	const updatePersonNumber = (name, newNumber) => {
     const person = persons.find(p => p.name === name)
+		const id = person.id
     const changedPerson = { ...person, number: newNumber }
 
     personsService.update(person.id, changedPerson)
+			.then((returnedPerson) => {
+				setPersons(persons.map(person => person.id !== id ? person : changedPerson))
+				setNewName('')
+				setNewNumber('')
+				setNotifMsg(`Updated number of ${returnedPerson.name}`)
+				setNotifClass('message')
+				resetNotif()
+			})
+			.catch(error => {
+				setNotifMsg(`${changedPerson.name} has already been removed from the server`)
+				setNotifClass('error')
+				resetNotif()
+			})
 	}
 
 	return (
