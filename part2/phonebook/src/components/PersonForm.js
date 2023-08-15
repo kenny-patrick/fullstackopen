@@ -43,6 +43,13 @@ const PersonForm = ({ persons, setPersons, setNotifMsg, setNotifClass }) => {
 					setNotifClass('message')
 					resetNotif()
 				})
+				.catch(error => {
+					setNewName('')
+					setNewNumber('')
+					setNotifMsg(`${error.response.data.error}`)
+					setNotifClass('error')
+					resetNotif()
+				})
 		}
 	}
 
